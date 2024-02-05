@@ -1,7 +1,7 @@
+semantics.h and an implementation file semantics.c. Together, they define and implement functions related to type checking for various operators in a programming language.
 semantics.h:
 Token and Operator Types:
-c
-Copy code
+
 /* token types */
 #define UNDEF 0
 #define INT_TYPE 1
@@ -22,8 +22,7 @@ Copy code
 These define constants for various token types and operator types used in the language.
 
 Function Declarations:
-c
-Copy code
+
 // Function Declarations
 int get_result_type(int type_1, int type_2, int op_type); /* type check and result type */
 void type_error(int type_1, int type_2, int op_type);      /* print type error */
@@ -31,10 +30,15 @@ These declare two functions:
 
 get_result_type: Determines the result type when applying an operator (op_type) to two operands with types type_1 and type_2.
 type_error: Prints a type error message when there is a conflict between types during type checking.
+
+
+
+
 semantics.c:
+
+
 Function Implementations:
-c
-Copy code
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
