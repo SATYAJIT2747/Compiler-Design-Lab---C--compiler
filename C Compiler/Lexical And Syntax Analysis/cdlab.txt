@@ -1,0 +1,278 @@
+
+Lex is a tool used to create a lexical analyzer.lexical analysis is the process in which a stream of characters is converted into a sequence of tokens. Such programs are called lexers or tokenizers. 
+
+all Lex files have a structure similar to the one given below.
+
+{declarations}
+%%
+{rules}
+%%
+{subroutines}
+
+
+ declarations are of two types, in C, and in Lex. All imports and global declarations are done in C and enclosed within %{ and %}. In addition to this, the Lex file can contain definitions of regular expressions and symbols.
+
+The rules consist of patterns followed by the actions in the same line.
+
+ the subroutines contain our own functions that we would like to write.
+
+
+
+parser.l
+
+%{
+    #include "y.tab.h"
+    int countn=0;
+%}
+
+%option yylineno
+
+alpha [a-zA-Z]
+digit [0-9]
+unary "++"|"--"
+
+%%
+
+"printf"                    { return PRINTFF; }
+"scanf"                     { return SCANFF; }
+"int"                       { return INT; }
+"float"                     { return FLOAT; }
+"char"                      { return CHAR; }
+"void"                      { return VOID; }
+"return"                    { return RETURN; }
+"for"	                    { return FOR; }
+"if"	                    { return IF; }
+"else"	                    { return ELSE; }
+^"#include"[ ]*<.+\.h>      { return INCLUDE; }
+"true"                      { return TRUE; }
+"false"                     { return FALSE; }
+[-]?{digit}+                { return NUMBER; }
+[-]?{digit}+\.{digit}{1,6}  { return FLOAT_NUM; }
+{alpha}({alpha}|{digit})*   { return ID; }
+{unary}                     { return UNARY; }
+"<="                        { return LE; }
+">="                        { return GE; }
+"=="                        { return EQ; }
+"!="                        { return NE; }
+">"	                    { return GT; }
+"<"	                    { return LT; }
+"&&"	                    { return AND; }
+"||"	                    { return OR; }
+"+"                         { return ADD; }
+"-"                         { return SUBTRACT; }
+"/"                         { return DIVIDE; }
+"*"                         { return MULTIPLY; }
+\/\/.*                      { ; }
+\/\*(.*\n)*.*\*\/           { ; } 
+[ \t]*                      { ; }
+[\n]                        { countn++; }
+.	                    { return *yytext; }
+["].*["]                    { return STR; }
+There is another file that is created — y.tab.h which we haven’t talked about yet. This is a file created when we compile the Yacc file. It tells our Lex file about all the valid token declarations that are defined in our Yacc program.
+
+
+
+
+
+Yacc (Yet Another Compiler Compiler) is a tool used to create a parser. It parses the stream of tokens from the Lex file and performs the semantic analysis. Yacc translates a given Context-Free Grammar (CFG) specifications into a C implementation y.tab.c. This C program when compiled, yields an executable parser. A Yacc file is in many ways, similar to the Lex file.
+
+{declarations}
+%%
+{rules}
+%%
+{subroutines}
+The declarations and subroutines are the same as those in Lex, but the rules are slightly different. Here, the rules are not regular expressions, rather they are grammar definitions in CFG. These rules, like in Lex, have two parts — productions and actions.
+
+Rules
+
+With our definitions done, it is time to get started with the rules of our parser. Before we begin, let us understand how rules are defined and there basic structure.
+
+production-name: definition 1    { action }
+| definition 2                   { more action }
+|                                { some more action }
+;
+
+
+int x = 35;
+or
+float x;
+
+
+declaration: datatype ID '=' value
+| datatype ID
+;
+datatype: INT
+| FLOAT
+| CHAR
+;
+value: NUMBER
+| FLOAT_NUM
+| CHARACTER
+;
+
+body: FOR '(' statement ';' condition ';' statement ')' '{' body '}'
+| IF '(' condition ')' '{' body '}' else
+| statement ';' 
+| body body
+| PRINTFF '(' STR ')' ';'
+| SCANFF '(' STR ',' '&' ID ')' ';'
+;
+
+
+
+parser.y
+
+%{
+    #include<stdio.h>
+    #include<string.h>
+    #include<stdlib.h>
+    #include<ctype.h>
+    #include"lex.yy.c"
+    
+    void yyerror(const char *s);
+    int yylex();
+    int yywrap();
+%}
+
+%token VOID CHARACTER PRINTFF SCANFF INT FLOAT CHAR FOR IF ELSE TRUE FALSE NUMBER FLOAT_NUM ID LE GE EQ NE GT LT AND OR STR ADD MULTIPLY DIVIDE SUBTRACT UNARY INCLUDE RETURN 
+
+%%
+
+program: headers main '(' ')' '{' body return '}'
+;
+
+headers: headers headers
+| INCLUDE
+;
+
+main: datatype ID
+;
+
+datatype: INT 
+| FLOAT 
+| CHAR
+| VOID
+;
+
+body: FOR '(' statement ';' condition ';' statement ')' '{' body '}'
+| IF '(' condition ')' '{' body '}' else
+| statement ';' 
+| body body
+| PRINTFF '(' STR ')' ';'
+| SCANFF '(' STR ',' '&' ID ')' ';'
+;
+
+else: ELSE '{' body '}'
+|
+;
+
+condition: value relop value 
+| TRUE 
+| FALSE
+;
+
+statement: datatype ID init 
+| ID '=' expression 
+| ID relop expression
+| ID UNARY 
+| UNARY ID
+;
+
+init: '=' value 
+|
+;
+
+expression: expression arithmetic expression
+| value
+;
+
+arithmetic: ADD 
+| SUBTRACT 
+| MULTIPLY
+| DIVIDE
+;
+
+relop: LT
+| GT
+| LE
+| GE
+| EQ
+| NE
+;
+
+value: NUMBER
+| FLOAT_NUM
+| CHARACTER
+| ID
+;
+
+return: RETURN value ';' 
+|
+;
+
+%%
+
+int main() {
+    yyparse();
+}
+
+void yyerror(const char* msg) {
+    fprintf(stderr, "%s\n", msg);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+bison -d project.y         # Generates project.tab.c and project.tab.h
+flex project.l             # Generates lex.yy.c
+
+gcc -o parser lex.yy.c project.tab.c -L"C:\GnuWin32\lib" -lfl -ly -lm
+
+parser.exe < "C:\Users\Satyajit\Desktop\CD LAB\LEXIXAL ANALYZER\input.c" > "C:\Users\Satyajit\Desktop\CD LAB\LEXIXAL ANALYZER\output.txt"
+
+
+
+
+
+
+
+
+input.c
+
+
+#include <stdio.h>
+int main()
+{
+    printf("Hello, World!\n");
+    return 0;
+}
+
+
+
+tokens
+HEADER: #include <stdio.h>
+TYPE: int
+IDENTIFIER: main
+PUNCTUATION/OPERATOR: (
+PUNCTUATION/OPERATOR: )
+PUNCTUATION/OPERATOR: {
+IDENTIFIER: printf
+PUNCTUATION/OPERATOR: (
+STRING CONSTANT: "Hello, World!\n"
+PUNCTUATION/OPERATOR: )
+PUNCTUATION/OPERATOR: ;
+RETURN: return
+INTEGER CONSTANT: 0
+PUNCTUATION/OPERATOR: ;
+PUNCTUATION/OPERATOR: }
+Parsing Successful
+

@@ -1,0 +1,167 @@
+symbol table...
+
+
+commands
+
+
+C:\Users\Satyajit\Desktop\CD LAB\New folder>flex lexer.l
+
+C:\Users\Satyajit\Desktop\CD LAB\New folder>flex lexer.l
+
+C:\Users\Satyajit\Desktop\CD LAB\New folder>gcc -o steemit lex.yy.c
+
+C:\Users\Satyajit\Desktop\CD LAB\New folder>del lex.yy.c
+
+C:\Users\Satyajit\Desktop\CD LAB\New folder>steemit.exe input3.c
+
+
+
+inp file
+
+int main() {
+    int x=1;
+    float f;
+    int a=3;
+    int x;
+    a = x * 3 + 5;
+    if(x>a) {
+        printf("Hi!");
+        a = x * 3 + 100;
+        if(x>a) {
+            printf("Hi!");
+            a = x * 3 + 100;
+        }
+        else {
+            x = a * 3 + 100;
+        }
+    }
+    else {
+        x = a * 3 + 100;
+    }
+}
+
+
+
+
+op symbol table
+
+
+
+
+
+text           token               lineno
+int            KEYWORD_INT         3
+Inserted main for the first time with linenumber 3!
+main           ID                  3
+(              LPAREN              3
+)              RPAREN              3
+{              LBRACE              3
+int            KEYWORD_INT         4
+Inserted x for the first time with linenumber 4!
+x              ID                  4
+=              ASSIGN              4
+1              ICONST              4
+;              SEMI                4
+float          KEYWORD_FLOAT       5
+Inserted f for the first time with linenumber 5!
+f              ID                  5
+;              SEMI                5
+int            KEYWORD_INT         6
+Inserted a for the first time with linenumber 6!
+a              ID                  6
+=              ASSIGN              6
+3              ICONST              6
+;              SEMI                6
+int            KEYWORD_INT         7
+Inserted x for the first time with linenumber 7!
+x              ID                  7
+;              SEMI                7
+Inserted a for the first time with linenumber 8!
+a              ID                  8
+=              ASSIGN              8
+Inserted x for the first time with linenumber 8!
+x              ID                  8
+*              MULOP               8
+3              ICONST              8
++              ADDOP               8
+5              ICONST              8
+;              SEMI                8
+if             KEYWORD_IF          9
+(              LPAREN              9
+Inserted x for the first time with linenumber 9!
+x              ID                  9
+>              RELOP               9
+Inserted a for the first time with linenumber 9!
+a              ID                  9
+)              RPAREN              9
+{              LBRACE              9
+Inserted printf for the first time with linenumber 10!
+printf         ID                  10
+(              LPAREN              10
+"Hi!"          STRING              10
+)              RPAREN              10
+;              SEMI                10
+Inserted a for the first time with linenumber 11!
+a              ID                  11
+=              ASSIGN              11
+Inserted x for the first time with linenumber 11!
+x              ID                  11
+*              MULOP               11
+3              ICONST              11
++              ADDOP               11
+100            ICONST              11
+;              SEMI                11
+if             KEYWORD_IF          12
+(              LPAREN              12
+Inserted x for the first time with linenumber 12!
+x              ID                  12
+>              RELOP               12
+Inserted a for the first time with linenumber 12!
+a              ID                  12
+)              RPAREN              12
+{              LBRACE              12
+Inserted printf for the first time with linenumber 13!
+printf         ID                  13
+(              LPAREN              13
+"Hi!"          STRING              13
+)              RPAREN              13
+;              SEMI                13
+Inserted a for the first time with linenumber 14!
+a              ID                  14
+=              ASSIGN              14
+Inserted x for the first time with linenumber 14!
+x              ID                  14
+*              MULOP               14
+3              ICONST              14
++              ADDOP               14
+100            ICONST              14
+;              SEMI                14
+}              RBRACE              15
+else           KEYWORD_ELSE        16
+{              LBRACE              16
+Found x again at line 17!
+x              ID                  17
+=              ASSIGN              17
+Inserted a for the first time with linenumber 17!
+a              ID                  17
+*              MULOP               17
+3              ICONST              17
++              ADDOP               17
+100            ICONST              17
+;              SEMI                17
+}              RBRACE              18
+}              RBRACE              19
+else           KEYWORD_ELSE        20
+{              LBRACE              20
+Found x again at line 21!
+x              ID                  21
+=              ASSIGN              21
+Found a again at line 21!
+a              ID                  21
+*              MULOP               21
+3              ICONST              21
++              ADDOP               21
+100            ICONST              21
+;              SEMI                21
+}              RBRACE              22
+}              RBRACE              23
