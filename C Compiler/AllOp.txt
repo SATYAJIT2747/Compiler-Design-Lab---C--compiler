@@ -1,0 +1,780 @@
+A compiler is a program that converts code in a programming language (which is high-level) into a machine-understandable format (low-level). 
+
+Part 1: Creating the Lexical Analyser
+
+Part 2: Adding the Grammar Rules
+
+Part 3: Creating the Symbol Table
+
+Part 4: Adding the Syntax Tree
+
+Part 5: Performing Semantic Analysis
+
+Part 6: Intermediate Code Generation
+
+
+Part 1: Creating the Lexical Analyser
+
+Part 2: Adding the Grammar Rules
+
+
+Lex is a tool used to create a lexical analyzer.lexical analysis is the process in which a stream of characters is converted into a sequence of tokens. Such programs are called lexers or tokenizers. 
+
+all Lex files have a structure similar to the one given below.
+
+{declarations}
+%%
+{rules}
+%%
+{subroutines}
+
+
+ declarations are of two types, in C, and in Lex. All imports and global declarations are done in C and enclosed within %{ and %}. In addition to this, the Lex file can contain definitions of regular expressions and symbols.
+
+The rules consist of patterns followed by the actions in the same line.
+
+ the subroutines contain our own functions that we would like to write.
+
+
+
+parser.l
+
+%{
+    #include "y.tab.h"
+    int countn=0;
+%}
+
+%option yylineno
+
+alpha [a-zA-Z]
+digit [0-9]
+unary "++"|"--"
+
+%%
+
+"printf"                    { return PRINTFF; }
+"scanf"                     { return SCANFF; }
+"int"                       { return INT; }
+"float"                     { return FLOAT; }
+"char"                      { return CHAR; }
+"void"                      { return VOID; }
+"return"                    { return RETURN; }
+"for"	                    { return FOR; }
+"if"	                    { return IF; }
+"else"	                    { return ELSE; }
+^"#include"[ ]*<.+\.h>      { return INCLUDE; }
+"true"                      { return TRUE; }
+"false"                     { return FALSE; }
+[-]?{digit}+                { return NUMBER; }
+[-]?{digit}+\.{digit}{1,6}  { return FLOAT_NUM; }
+{alpha}({alpha}|{digit})*   { return ID; }
+{unary}                     { return UNARY; }
+"<="                        { return LE; }
+">="                        { return GE; }
+"=="                        { return EQ; }
+"!="                        { return NE; }
+">"	                    { return GT; }
+"<"	                    { return LT; }
+"&&"	                    { return AND; }
+"||"	                    { return OR; }
+"+"                         { return ADD; }
+"-"                         { return SUBTRACT; }
+"/"                         { return DIVIDE; }
+"*"                         { return MULTIPLY; }
+\/\/.*                      { ; }
+\/\*(.*\n)*.*\*\/           { ; } 
+[ \t]*                      { ; }
+[\n]                        { countn++; }
+.	                    { return *yytext; }
+["].*["]                    { return STR; }
+There is another file that is created — y.tab.h which we haven’t talked about yet. This is a file created when we compile the Yacc file. It tells our Lex file about all the valid token declarations that are defined in our Yacc program.
+
+
+
+
+
+Yacc (Yet Another Compiler Compiler) is a tool used to create a parser. It parses the stream of tokens from the Lex file and performs the semantic analysis. Yacc translates a given Context-Free Grammar (CFG) specifications into a C implementation y.tab.c. This C program when compiled, yields an executable parser. A Yacc file is in many ways, similar to the Lex file.
+
+{declarations}
+%%
+{rules}
+%%
+{subroutines}
+
+
+parser.y
+
+%{
+    #include<stdio.h>
+    #include<string.h>
+    #include<stdlib.h>
+    #include<ctype.h>
+    #include"lex.yy.c"
+    
+    void yyerror(const char *s);
+    int yylex();
+    int yywrap();
+%}
+
+%token VOID CHARACTER PRINTFF SCANFF INT FLOAT CHAR FOR IF ELSE TRUE FALSE NUMBER FLOAT_NUM ID LE GE EQ NE GT LT AND OR STR ADD MULTIPLY DIVIDE SUBTRACT UNARY INCLUDE RETURN 
+
+%%
+
+program: headers main '(' ')' '{' body return '}'
+;
+
+headers: headers headers
+| INCLUDE
+;
+
+main: datatype ID
+;
+
+datatype: INT 
+| FLOAT 
+| CHAR
+| VOID
+;
+
+body: FOR '(' statement ';' condition ';' statement ')' '{' body '}'
+| IF '(' condition ')' '{' body '}' else
+| statement ';' 
+| body body
+| PRINTFF '(' STR ')' ';'
+| SCANFF '(' STR ',' '&' ID ')' ';'
+;
+
+else: ELSE '{' body '}'
+|
+;
+
+condition: value relop value 
+| TRUE 
+| FALSE
+;
+
+statement: datatype ID init 
+| ID '=' expression 
+| ID relop expression
+| ID UNARY 
+| UNARY ID
+;
+
+init: '=' value 
+|
+;
+
+expression: expression arithmetic expression
+| value
+;
+
+arithmetic: ADD 
+| SUBTRACT 
+| MULTIPLY
+| DIVIDE
+;
+
+relop: LT
+| GT
+| LE
+| GE
+| EQ
+| NE
+;
+
+value: NUMBER
+| FLOAT_NUM
+| CHARACTER
+| ID
+;
+
+return: RETURN value ';' 
+|
+;
+
+%%
+
+int main() {
+    yyparse();
+}
+
+void yyerror(const char* msg) {
+    fprintf(stderr, "%s\n", msg);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+bison -d project.y         # Generates project.tab.c and project.tab.h
+flex project.l             # Generates lex.yy.c
+
+gcc -o parser lex.yy.c project.tab.c -L"C:\GnuWin32\lib" -lfl -ly -lm
+
+parser.exe < "C:\Users\Satyajit\Desktop\CD LAB\LEXIXAL ANALYZER\input.c" > "C:\Users\Satyajit\Desktop\CD LAB\LEXIXAL ANALYZER\output.txt"
+
+
+
+
+
+
+
+
+input.c
+
+
+#include <stdio.h>
+int main()
+{
+    printf("Hello, World!\n");
+    return 0;
+}
+
+
+
+tokens
+HEADER: #include <stdio.h>
+TYPE: int
+IDENTIFIER: main
+PUNCTUATION/OPERATOR: (
+PUNCTUATION/OPERATOR: )
+PUNCTUATION/OPERATOR: {
+IDENTIFIER: printf
+PUNCTUATION/OPERATOR: (
+STRING CONSTANT: "Hello, World!\n"
+PUNCTUATION/OPERATOR: )
+PUNCTUATION/OPERATOR: ;
+RETURN: return
+INTEGER CONSTANT: 0
+PUNCTUATION/OPERATOR: ;
+PUNCTUATION/OPERATOR: }
+Parsing Successful
+
+
+
+
+
+
+Part 3: Creating the Symbol Table
+
+
+The symbol table stores the identifier, the datatype (applicable to variables only), the type or category of the identifier and the line number.
+
+
+
+
+%{
+    #include<stdio.h>
+    #include<string.h>
+    #include<stdlib.h>
+    #include<ctype.h>
+    #include"lex.yy.c"
+    
+    void yyerror(const char *s);
+    int yylex();
+    int yywrap();
+    void add(char);
+    void insert_type();
+    int search(char *);
+    void insert_type();
+
+    struct dataType {
+        char * id_name;
+        char * data_type;
+        char * type;
+        int line_no;
+    } symbol_table[40];
+
+    int count=0;
+    int q;
+    char type[10];
+    extern int countn;
+%}
+
+%token VOID CHARACTER PRINTFF SCANFF INT FLOAT CHAR FOR IF ELSE TRUE FALSE NUMBER FLOAT_NUM ID LE GE EQ NE GT LT AND OR STR ADD MULTIPLY DIVIDE SUBTRACT UNARY INCLUDE RETURN 
+
+%%
+
+program: headers main '(' ')' '{' body return '}'
+;
+
+headers: headers headers
+| INCLUDE { add('H'); }
+;
+
+main: datatype ID { add('F'); }
+;
+
+datatype: INT { insert_type(); }
+| FLOAT { insert_type(); }
+| CHAR { insert_type(); }
+| VOID { insert_type(); }
+;
+
+body: FOR { add('K'); } '(' statement ';' condition ';' statement ')' '{' body '}'
+| IF { add('K'); } '(' condition ')' '{' body '}' else
+| statement ';'
+| body body 
+| PRINTFF { add('K'); } '(' STR ')' ';'
+| SCANFF { add('K'); } '(' STR ',' '&' ID ')' ';'
+;
+
+else: ELSE { add('K'); } '{' body '}'
+|
+;
+
+condition: value relop value 
+| TRUE { add('K'); }
+| FALSE { add('K'); }
+|
+;
+
+statement: datatype ID { add('V'); } init
+| ID '=' expression
+| ID relop expression
+| ID UNARY
+| UNARY ID
+;
+
+init: '=' value
+|
+;
+
+expression: expression arithmetic expression
+| value
+;
+
+arithmetic: ADD 
+| SUBTRACT 
+| MULTIPLY
+| DIVIDE
+;
+
+relop: LT
+| GT
+| LE
+| GE
+| EQ
+| NE
+;
+
+value: NUMBER { add('C'); }
+| FLOAT_NUM { add('C'); }
+| CHARACTER { add('C'); }
+| ID
+;
+
+return: RETURN { add('K'); } value ';'
+|
+;
+
+%%
+
+int main() {
+  yyparse();
+  printf("\n\n");
+	printf("\t\t\t\t\t\t\t\t PHASE 1: LEXICAL ANALYSIS \n\n");
+	printf("\nSYMBOL   DATATYPE   TYPE   LINE NUMBER \n");
+	printf("_______________________________________\n\n");
+	int i=0;
+	for(i=0; i<count; i++) {
+		printf("%s\t%s\t%s\t%d\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no);
+	}
+	for(i=0;i<count;i++) {
+		free(symbol_table[i].id_name);
+		free(symbol_table[i].type);
+	}
+	printf("\n\n");
+}
+
+int search(char *type) {
+	int i;
+	for(i=count-1; i>=0; i--) {
+		if(strcmp(symbol_table[i].id_name, type)==0) {
+			return -1;
+			break;
+		}
+	}
+	return 0;
+}
+
+void add(char c) {
+  q=search(yytext);
+  if(!q) {
+    if(c == 'H') {
+			symbol_table[count].id_name=strdup(yytext);
+			symbol_table[count].data_type=strdup(type);
+			symbol_table[count].line_no=countn;
+			symbol_table[count].type=strdup("Header");
+			count++;
+		}
+		else if(c == 'K') {
+			symbol_table[count].id_name=strdup(yytext);
+			symbol_table[count].data_type=strdup("N/A");
+			symbol_table[count].line_no=countn;
+			symbol_table[count].type=strdup("Keyword\t");
+			count++;
+		}
+		else if(c == 'V') {
+			symbol_table[count].id_name=strdup(yytext);
+			symbol_table[count].data_type=strdup(type);
+			symbol_table[count].line_no=countn;
+			symbol_table[count].type=strdup("Variable");
+			count++;
+		}
+		else if(c == 'C') {
+			symbol_table[count].id_name=strdup(yytext);
+			symbol_table[count].data_type=strdup("CONST");
+			symbol_table[count].line_no=countn;
+			symbol_table[count].type=strdup("Constant");
+			count++;
+		}
+		else if(c == 'F') {
+			symbol_table[count].id_name=strdup(yytext);
+			symbol_table[count].data_type=strdup(type);
+			symbol_table[count].line_no=countn;
+			symbol_table[count].type=strdup("Function");
+			count++;
+		}
+	}
+}
+
+void insert_type() {
+	strcpy(type, yytext);
+}
+
+void yyerror(const char* msg) {
+  fprintf(stderr, "%s\n", msg);
+}
+
+
+
+
+
+
+
+
+symbol table...
+
+
+commands
+
+
+C:\Users\Satyajit\Desktop\CD LAB\New folder>flex lexer.l
+
+C:\Users\Satyajit\Desktop\CD LAB\New folder>flex lexer.l
+
+C:\Users\Satyajit\Desktop\CD LAB\New folder>gcc -o steemit lex.yy.c
+
+C:\Users\Satyajit\Desktop\CD LAB\New folder>del lex.yy.c
+
+C:\Users\Satyajit\Desktop\CD LAB\New folder>steemit.exe input3.c
+
+
+
+inp file
+
+int main() {
+    int x=1;
+    float f;
+    int a=3;
+    int x;
+    a = x * 3 + 5;
+    if(x>a) {
+        printf("Hi!");
+        a = x * 3 + 100;
+        if(x>a) {
+            printf("Hi!");
+            a = x * 3 + 100;
+        }
+        else {
+            x = a * 3 + 100;
+        }
+    }
+    else {
+        x = a * 3 + 100;
+    }
+}
+
+
+
+
+op symbol table
+
+
+
+
+
+text           token               lineno
+int            KEYWORD_INT         3
+Inserted main for the first time with linenumber 3!
+main           ID                  3
+(              LPAREN              3
+)              RPAREN              3
+{              LBRACE              3
+int            KEYWORD_INT         4
+Inserted x for the first time with linenumber 4!
+x              ID                  4
+=              ASSIGN              4
+1              ICONST              4
+;              SEMI                4
+float          KEYWORD_FLOAT       5
+Inserted f for the first time with linenumber 5!
+f              ID                  5
+;              SEMI                5
+int            KEYWORD_INT         6
+Inserted a for the first time with linenumber 6!
+a              ID                  6
+=              ASSIGN              6
+3              ICONST              6
+;              SEMI                6
+int            KEYWORD_INT         7
+Inserted x for the first time with linenumber 7!
+x              ID                  7
+;              SEMI                7
+Inserted a for the first time with linenumber 8!
+a              ID                  8
+=              ASSIGN              8
+Inserted x for the first time with linenumber 8!
+x              ID                  8
+*              MULOP               8
+3              ICONST              8
++              ADDOP               8
+5              ICONST              8
+;              SEMI                8
+if             KEYWORD_IF          9
+(              LPAREN              9
+Inserted x for the first time with linenumber 9!
+x              ID                  9
+>              RELOP               9
+Inserted a for the first time with linenumber 9!
+a              ID                  9
+)              RPAREN              9
+{              LBRACE              9
+Inserted printf for the first time with linenumber 10!
+printf         ID                  10
+(              LPAREN              10
+"Hi!"          STRING              10
+)              RPAREN              10
+;              SEMI                10
+Inserted a for the first time with linenumber 11!
+a              ID                  11
+=              ASSIGN              11
+Inserted x for the first time with linenumber 11!
+x              ID                  11
+*              MULOP               11
+3              ICONST              11
++              ADDOP               11
+100            ICONST              11
+;              SEMI                11
+if             KEYWORD_IF          12
+(              LPAREN              12
+Inserted x for the first time with linenumber 12!
+x              ID                  12
+>              RELOP               12
+Inserted a for the first time with linenumber 12!
+a              ID                  12
+)              RPAREN              12
+{              LBRACE              12
+Inserted printf for the first time with linenumber 13!
+printf         ID                  13
+(              LPAREN              13
+"Hi!"          STRING              13
+)              RPAREN              13
+;              SEMI                13
+Inserted a for the first time with linenumber 14!
+a              ID                  14
+=              ASSIGN              14
+Inserted x for the first time with linenumber 14!
+x              ID                  14
+*              MULOP               14
+3              ICONST              14
++              ADDOP               14
+100            ICONST              14
+;              SEMI                14
+}              RBRACE              15
+else           KEYWORD_ELSE        16
+{              LBRACE              16
+Found x again at line 17!
+x              ID                  17
+=              ASSIGN              17
+Inserted a for the first time with linenumber 17!
+a              ID                  17
+*              MULOP               17
+3              ICONST              17
++              ADDOP               17
+100            ICONST              17
+;              SEMI                17
+}              RBRACE              18
+}              RBRACE              19
+else           KEYWORD_ELSE        20
+{              LBRACE              20
+Found x again at line 21!
+x              ID                  21
+=              ASSIGN              21
+Found a again at line 21!
+a              ID                  21
+*              MULOP               21
+3              ICONST              21
++              ADDOP               21
+100            ICONST              21
+;              SEMI                21
+}              RBRACE              22
+}              RBRACE              23
+
+
+
+
+
+
+
+
+syntax and semantics analysis
+
+
+
+
+
+C:\Users\Satyajit\Desktop\CD LAB\compiler-master\compiler-master\Type Declaration and Checking>bison -d parser.y
+
+C:\Users\Satyajit\Desktop\CD LAB\compiler-master\compiler-master\Type Declaration and Checking>flex lexer.l
+
+C:\Users\Satyajit\Desktop\CD LAB\compiler-master\compiler-master\Type Declaration and Checking>gcc -o steemit parser.tab.c lex.yy.c
+
+C:\Users\Satyajit\Desktop\CD LAB\compiler-master\compiler-master\Type Declaration and Checking>steemit.exe full_example.c > output.txt
+
+C:\Users\Satyajit\Desktop\CD LAB\compiler-master\compiler-master\Type Declaration and Checking>steemit.exe full_example.c > output1.txt
+Syntax error at line 4
+
+
+
+
+
+
+Eat up comment at line 1
+Eat up comment at line 2
+Eat up comment at line 3
+Inserted i for the first time with linenumber 4!
+Eat up comment at line 4
+Inserted c for the first time with linenumber 5!
+Eat up comment at line 5
+Inserted val for the first time with linenumber 6!
+Inserted res for the first time with linenumber 6!
+Eat up comment at line 6
+Inserted p for the first time with linenumber 7!
+Eat up comment at line 7
+Eat up comment at line 8
+Found p again at line 9!
+Found res again at line 9!
+Eat up comment at line 9
+Found i again at line 10!
+Found i again at line 10!
+Found i again at line 10!
+Eat up comment at line 10
+Found i again at line 11!
+Eat up comment at line 11
+Found i again at line 14!
+Found i again at line 15!
+Found i again at line 15!
+Found val again at line 16!
+Inserted func1 for the first time with linenumber 16!
+Found p again at line 17!
+Inserted add for the first time with linenumber 17!
+Found val again at line 17!
+Found i again at line 17!
+Inserted print for the first time with linenumber 18!
+Found res again at line 18!
+Found i again at line 18!
+Found print again at line 19!
+Found p again at line 23!
+Found add again at line 23!
+Found val again at line 23!
+Found i again at line 23!
+Found val again at line 24!
+Found res again at line 24!
+Found i again at line 24!
+Found print again at line 25!
+Found res again at line 25!
+Found i again at line 25!
+Found print again at line 26!
+Found p again at line 27!
+Found p again at line 27!
+Found i again at line 30!
+Found val again at line 30!
+Eat up comment at line 30
+Found print again at line 31!
+Found i again at line 35!
+Eat up comment at line 35
+Found print again at line 36!
+Found i again at line 36!
+Found print again at line 37!
+Inserted func2 for the first time with linenumber 38!
+Found c again at line 38!
+Found i again at line 39!
+Found print again at line 41!
+Eat up comment from line 42 to line 42
+Eat up comment at line 43
+Found func1 again at line 44!
+Eat up comment from line 44 to line 44
+Eat up comment at line 45
+Hiding scope '1':
+Found func2 again at line 48!
+Inserted c for a new scope with linenumber 48!
+Eat up comment from line 48 to line 48
+Eat up comment at line 49
+Inserted s for the first time with linenumber 50!
+Eat up comment at line 51
+Found s again at line 52!
+Found c again at line 52!
+Found print again at line 53!
+Found s again at line 53!
+Hiding scope '1':
+Hiding c..
+Hiding s..
+Found add again at line 55!
+Inserted a for the first time with linenumber 55!
+Inserted b for the first time with linenumber 55!
+Eat up comment from line 55 to line 55
+Eat up comment at line 56
+Inserted res for a new scope with linenumber 57!
+Eat up comment at line 58
+Found res again at line 59!
+Found a again at line 59!
+Found b again at line 59!
+Found res again at line 60!
+Hiding scope '1':
+Hiding a..
+Hiding b..
+Hiding res..
+Parsing finished!
+
+
+
+
+
+
+
+
+
+when in ip error   
+in i;                    // simple variable  error
+char c = 'c';             // one with init
+double val = 2.5, res[6]; 
+
+
+
+
+C:\Users\Satyajit\Desktop\CD LAB\compiler-master\compiler-master\Type Declaration and Checking>steemit.exe full_example.c > output1.txt
+Syntax error at line 4
+
+
+
+
