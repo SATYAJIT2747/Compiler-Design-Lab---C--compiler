@@ -1,0 +1,57 @@
+semantics.h:
+Token and Operator Types:
+c
+Copy code
+/* token types */
+#define UNDEF 0
+#define INT_TYPE 1
+#define REAL_TYPE 2
+#define CHAR_TYPE 3
+#define ARRAY_TYPE 4
+#define POINTER_TYPE 5
+#define FUNCTION_TYPE 6
+
+/* operator types */
+#define NONE 0      // to check types only - assignment, parameter
+#define ARITHM_OP 1 // ADDOP, MULOP, DIVOP (+, -, *, /)
+#define INCR_OP 2   // INCR (++, --)
+#define BOOL_OP 3   // OROP, ANDOP (||, &&)
+#define NOT_OP 4    // NOTOP (!)
+#define REL_OP 5    // RELOP (>, <, >=, <=)
+#define EQU_OP 6    // EQUOP (==, !=)
+These define constants for various token types and operator types used in the language.
+
+Function Declarations:
+c
+Copy code
+// Function Declarations
+int get_result_type(int type_1, int type_2, int op_type); /* type check and result type */
+void type_error(int type_1, int type_2, int op_type);      /* print type error */
+These declare two functions:
+
+get_result_type: Determines the result type when applying an operator (op_type) to two operands with types type_1 and type_2.
+type_error: Prints a type error message when there is a conflict between types during type checking.
+semantics.c:
+Function Implementations:
+c
+Copy code
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "semantics.h"
+
+int get_result_type(int type_1, int type_2, int op_type) {
+    // Implementation of type checking logic for different operator types
+    // ...
+
+    // Default case: wrong choice
+    fprintf(stderr, "Error in operator selection!\n");
+    exit(1);
+}
+
+void type_error(int type_1, int type_2, int op_type) {
+    // Implementation of printing a type error message
+    fprintf(stderr, "Type conflict between %d and %d using op type %d\n", type_1, type_2, op_type);
+    exit(1);
+}
+This file contains the actual implementations of the functions declared in semantics.h. The get_result_type function uses a switch statement to handle different operator types and performs type checking logic accordingly. The type_error function is called to print an error message and exit the program when a type conflict is detected.
