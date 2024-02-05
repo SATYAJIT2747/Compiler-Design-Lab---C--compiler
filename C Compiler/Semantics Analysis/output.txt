@@ -1,0 +1,132 @@
+
+C:\Users\Satyajit\Desktop\CD LAB\compiler-master\compiler-master\Type Declaration and Checking>bison -d parser.y
+
+C:\Users\Satyajit\Desktop\CD LAB\compiler-master\compiler-master\Type Declaration and Checking>flex lexer.l
+
+C:\Users\Satyajit\Desktop\CD LAB\compiler-master\compiler-master\Type Declaration and Checking>gcc -o steemit parser.tab.c lex.yy.c
+
+C:\Users\Satyajit\Desktop\CD LAB\compiler-master\compiler-master\Type Declaration and Checking>steemit.exe full_example.c > output.txt
+
+C:\Users\Satyajit\Desktop\CD LAB\compiler-master\compiler-master\Type Declaration and Checking>steemit.exe full_example.c > output1.txt
+Syntax error at line 4
+
+
+
+
+
+
+Eat up comment at line 1
+Eat up comment at line 2
+Eat up comment at line 3
+Inserted i for the first time with linenumber 4!
+Eat up comment at line 4
+Inserted c for the first time with linenumber 5!
+Eat up comment at line 5
+Inserted val for the first time with linenumber 6!
+Inserted res for the first time with linenumber 6!
+Eat up comment at line 6
+Inserted p for the first time with linenumber 7!
+Eat up comment at line 7
+Eat up comment at line 8
+Found p again at line 9!
+Found res again at line 9!
+Eat up comment at line 9
+Found i again at line 10!
+Found i again at line 10!
+Found i again at line 10!
+Eat up comment at line 10
+Found i again at line 11!
+Eat up comment at line 11
+Found i again at line 14!
+Found i again at line 15!
+Found i again at line 15!
+Found val again at line 16!
+Inserted func1 for the first time with linenumber 16!
+Found p again at line 17!
+Inserted add for the first time with linenumber 17!
+Found val again at line 17!
+Found i again at line 17!
+Inserted print for the first time with linenumber 18!
+Found res again at line 18!
+Found i again at line 18!
+Found print again at line 19!
+Found p again at line 23!
+Found add again at line 23!
+Found val again at line 23!
+Found i again at line 23!
+Found val again at line 24!
+Found res again at line 24!
+Found i again at line 24!
+Found print again at line 25!
+Found res again at line 25!
+Found i again at line 25!
+Found print again at line 26!
+Found p again at line 27!
+Found p again at line 27!
+Found i again at line 30!
+Found val again at line 30!
+Eat up comment at line 30
+Found print again at line 31!
+Found i again at line 35!
+Eat up comment at line 35
+Found print again at line 36!
+Found i again at line 36!
+Found print again at line 37!
+Inserted func2 for the first time with linenumber 38!
+Found c again at line 38!
+Found i again at line 39!
+Found print again at line 41!
+Eat up comment from line 42 to line 42
+Eat up comment at line 43
+Found func1 again at line 44!
+Eat up comment from line 44 to line 44
+Eat up comment at line 45
+Hiding scope '1':
+Found func2 again at line 48!
+Inserted c for a new scope with linenumber 48!
+Eat up comment from line 48 to line 48
+Eat up comment at line 49
+Inserted s for the first time with linenumber 50!
+Eat up comment at line 51
+Found s again at line 52!
+Found c again at line 52!
+Found print again at line 53!
+Found s again at line 53!
+Hiding scope '1':
+Hiding c..
+Hiding s..
+Found add again at line 55!
+Inserted a for the first time with linenumber 55!
+Inserted b for the first time with linenumber 55!
+Eat up comment from line 55 to line 55
+Eat up comment at line 56
+Inserted res for a new scope with linenumber 57!
+Eat up comment at line 58
+Found res again at line 59!
+Found a again at line 59!
+Found b again at line 59!
+Found res again at line 60!
+Hiding scope '1':
+Hiding a..
+Hiding b..
+Hiding res..
+Parsing finished!
+
+
+
+
+
+
+
+
+
+when in ip error   
+in i;                    // simple variable  error
+char c = 'c';             // one with init
+double val = 2.5, res[6]; 
+
+
+
+
+C:\Users\Satyajit\Desktop\CD LAB\compiler-master\compiler-master\Type Declaration and Checking>steemit.exe full_example.c > output1.txt
+Syntax error at line 4

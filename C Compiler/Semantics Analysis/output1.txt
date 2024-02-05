@@ -1,0 +1,4 @@
+Eat up comment at line 1
+Eat up comment at line 2
+Eat up comment at line 3
+Inserted in for the first time with linenumber 4!
