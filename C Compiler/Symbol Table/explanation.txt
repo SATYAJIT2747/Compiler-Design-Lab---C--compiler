@@ -1,3 +1,7 @@
+sym.c and sym.h files together implement a symbol table for a programming language compiler or interpreter.......
+
+
+
 sym.h:
 Token Types and Constants:
 c
@@ -23,8 +27,8 @@ Copy code
 These define constants related to the symbol table implementation, including the maximum size of the hash table, the maximum size of tokens/identifiers, and various token types representing data types and parameter passing methods.
 
 Parameter Structure and Linked List Structure:
-c
-Copy code
+
+
 /* parameter struct */
 typedef struct Param {
     int par_type;
@@ -43,8 +47,7 @@ typedef struct RefList {
 These define the Param structure to store information about function parameters and the RefList structure, a linked list to store line numbers and types of references for each variable.
 
 List Node Structure:
-c
-Copy code
+
 // struct that represents a list node
 typedef struct list_t {
     char st_name[MAXTOKENLEN];
@@ -68,8 +71,7 @@ typedef struct list_t {
 This defines the list_t structure representing a node in the symbol table. It includes fields for the variable or identifier name, size, scope, reference list, value, type, information type for arrays and functions, array-related information, function parameters, and a pointer to the next item in the list.
 
 Function Declarations:
-c
-Copy code
+
 /* the hash table */
 static list_t **hash_table;
 
@@ -87,7 +89,7 @@ These declare the global variable hash_table, function declarations to initializ
 sym.c:
 Include Statements:
 c
-Copy code
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -96,7 +98,7 @@ Includes standard libraries and the header file symtab.h for the symbol table de
 
 Hash Table Initialization:
 c
-Copy code
+
 void init_hash_table() {
     int i; 
     hash_table = malloc(SIZE * sizeof(list_t*));
@@ -106,7 +108,7 @@ Initializes the hash table, allocating memory and setting initial values.
 
 Hash Function:
 c
-Copy code
+
 unsigned int hash(char *key) {
     unsigned int hashval = 0;
     for(; *key != '\0'; key++) hashval += *key;
@@ -117,7 +119,7 @@ Defines the hash function to calculate the index for a given key.
 
 Insertion Function:
 c
-Copy code
+
 void insert(char *name, int len, int type, int lineno) {
     // Implementation of inserting an entry into the hash table
     // ...
@@ -126,7 +128,7 @@ Implements the insertion of an entry into the hash table, handling collisions an
 
 Lookup Functions:
 c
-Copy code
+
 list_t *lookup(char *name) {
     // Implementation of searching for an entry in the hash table
     // ...
@@ -140,7 +142,7 @@ Implement functions to search for entries in the hash table, considering both gl
 
 Scope Management Functions:
 c
-Copy code
+
 void hide_scope() {
     // Implementation of hiding the current scope
     // ...
@@ -154,7 +156,7 @@ Implements functions to manage scopes, allowing hiding the current scope and mov
 
 Symbol Table Dump Function:
 c
-Copy code
+
 void symtab_dump(FILE *of) {
     // Implementation of dumping the contents of the symbol table to a file
     // ...
