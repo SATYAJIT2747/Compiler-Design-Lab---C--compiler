@@ -4,8 +4,7 @@ sym.c and sym.h files together implement a symbol table for a programming langua
 
 sym.h:
 Token Types and Constants:
-c
-Copy code
+
 /* maximum size of hash table */
 #define SIZE 211
 
